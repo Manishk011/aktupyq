@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import ScrollToTop from './components/common/ScrollToTop';
 import Home from './pages/Home';
 import BranchSelection from './pages/BranchSelection';
@@ -73,6 +74,7 @@ function App() {
                     </div>
                 } />
             </Routes>
+            <Analytics />
         </>
     );
 }
