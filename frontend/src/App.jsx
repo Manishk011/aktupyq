@@ -5,12 +5,13 @@ import Home from './pages/Home';
 import BranchSelection from './pages/BranchSelection';
 import YearSelection from './pages/YearSelection';
 import MaterialPage from './pages/MaterialPage';
+import SearchResults from './pages/SearchResults';
+import Syllabus from './pages/Syllabus';
 
 // Auth Components
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import AdminLogin from './pages/auth/AdminLogin';
-import ProtectedRoute from './components/auth/ProtectedRoute';
 import AdminRoute from './components/auth/AdminRoute';
 
 // Admin Components
@@ -46,6 +47,8 @@ function App() {
                 <Route path="/contact" element={<ContactUs />} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/terms" element={<TermsAndConditions />} />
+                <Route path="/search" element={<SearchResults />} />
+                <Route path="/syllabus" element={<Syllabus />} />
 
                 {/* Student Protected Routes (Optional currently, but ready to use) */}
                 {/* <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} /> */}

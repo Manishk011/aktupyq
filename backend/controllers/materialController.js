@@ -43,7 +43,7 @@ const getMaterials = async (req, res) => {
 // @access  Private/Admin
 const createMaterial = async (req, res) => {
     try {
-        const { title, type, subjectId, isGdrive, gdriveLink } = req.body;
+        const { title, type, session, subjectId, isGdrive, gdriveLink } = req.body;
 
         const isGdriveBool = isGdrive === 'true' || isGdrive === true;
 
@@ -58,6 +58,7 @@ const createMaterial = async (req, res) => {
         let materialData = {
             title,
             type,
+            session,
             subjectId,
             uploadedBy: req.user._id,
             isGdrive: isGdriveBool
@@ -200,11 +201,14 @@ const updateMaterial = async (req, res) => {
             return res.status(404).json({ message: 'Material not found' });
         }
 
-        const { title, type, subjectId, isGdrive, gdriveLink } = req.body;
+        const { title, type, session, subjectId, isGdrive, gdriveLink } = req.body;
         const isGdriveBool = isGdrive === 'true' || isGdrive === true;
 
         material.title = title || material.title;
         material.type = type || material.type;
+        if (session !== undefined) {
+            material.session = session;
+        }
         material.subjectId = subjectId || material.subjectId;
 
         // If they provided a new file or changed the GDrive link

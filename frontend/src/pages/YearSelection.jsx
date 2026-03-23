@@ -26,6 +26,7 @@ const YearSelection = () => {
     const [years, setYears] = useState([]);
     const [courseName, setCourseName] = useState(courseId?.toUpperCase());
     const [branchName, setBranchName] = useState(branchId?.replace(/-/g, ' '));
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchYearData = async () => {
@@ -55,6 +56,8 @@ const YearSelection = () => {
                 }
             } catch (error) {
                 console.error("Error fetching years:", error);
+            } finally {
+                setLoading(false);
             }
         };
         fetchYearData();
@@ -78,32 +81,38 @@ const YearSelection = () => {
                     </motion.div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-                    {years.map((year, index) => (
-                        <motion.div
-                            key={year._id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.1, duration: 0.4 }}
-                            whileHover={{ scale: 1.03 }}
-                        >
-                            <Link
-                                to={`/course/${courseId}/${branchId}/${year.yearNumber}`}
-                                className="block bg-white rounded-2xl p-8 border border-gray-100 shadow-lg hover:shadow-2xl transition-all text-center group h-full relative overflow-hidden"
+                {loading ? (
+                    <div className="flex flex-col items-center justify-center py-20">
+                        <div className="w-12 h-12 border-4 border-blue-200 border-t-primary rounded-full animate-spin mb-4"></div>
+                        <p className="text-gray-500 font-medium">Loading academic years...</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+                        {years.map((year, index) => (
+                            <motion.div
+                                key={year._id}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: index * 0.1, duration: 0.4 }}
+                                whileHover={{ scale: 1.03 }}
                             >
-                                <div className={`absolute top-0 left-0 w-full h-2 ${year.color}`} />
+                                <Link
+                                    to={`/course/${courseId}/${branchId}/${year.yearNumber}`}
+                                    className="block bg-white rounded-2xl p-8 border border-gray-100 shadow-lg hover:shadow-2xl transition-all text-center group h-full relative overflow-hidden"
+                                >
+                                    <div className={`absolute top-0 left-0 w-full h-2 ${year.color}`} />
 
-                                <div className={`w-16 h-16 mx-auto ${year.color} bg-opacity-10 rounded-full flex items-center justify-center mb-6 group-hover:bg-opacity-20 transition-all text-${year.color.split('-')[1]}-600`}>
-                                    {/* Simplified Icon handling for this demo context */}
-                                    <span className="font-bold text-2xl text-gray-700">{year.yearNumber}</span>
-                                </div>
+                                    <div className={`w-16 h-16 mx-auto ${year.color} bg-opacity-10 rounded-full flex items-center justify-center mb-6 group-hover:bg-opacity-20 transition-all text-${year.color.split('-')[1]}-600`}>
+                                        <span className="font-bold text-2xl text-gray-700">{year.yearNumber}</span>
+                                    </div>
 
-                                <h3 className="text-2xl font-bold text-gray-800 mb-2">{year.formattedName}</h3>
-                                <p className="text-gray-500">{year.desc}</p>
-                            </Link>
-                        </motion.div>
-                    ))}
-                </div>
+                                    <h3 className="text-2xl font-bold text-gray-800 mb-2">{year.formattedName}</h3>
+                                    <p className="text-gray-500">{year.desc}</p>
+                                </Link>
+                            </motion.div>
+                        ))}
+                    </div>
+                )}
             </div>
         </Layout>
     );

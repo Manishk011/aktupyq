@@ -39,6 +39,7 @@ const CourseCard = ({ title, icon: Icon, color, delay }) => {
 
 const CourseSection = () => {
     const [courses, setCourses] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchCourseData = async () => {
@@ -56,13 +57,15 @@ const CourseSection = () => {
                 setCourses(formattedCourses);
             } catch (error) {
                 console.error("Error fetching courses:", error);
+            } finally {
+                setLoading(false);
             }
         };
         fetchCourseData();
     }, []);
 
     return (
-        <section className="py-20 bg-slate-50 border-t border-gray-200">
+        <section id="courses" className="py-20 bg-slate-50 border-t border-gray-200">
             <div className="container mx-auto px-4 lg:px-8">
                 <div className="text-center mb-16">
                     <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Explore Courses</h2>
@@ -71,24 +74,31 @@ const CourseSection = () => {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {courses.map((course, index) => (
-                        <CourseCard key={index} {...course} delay={index * 0.1} />
-                    ))}
+                {loading ? (
+                    <div className="flex flex-col items-center justify-center py-20">
+                        <div className="w-12 h-12 border-4 border-blue-200 border-t-primary rounded-full animate-spin mb-4"></div>
+                        <p className="text-gray-500 font-medium">Loading courses...</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {courses.map((course, index) => (
+                            <CourseCard key={index} {...course} delay={index * 0.1} />
+                        ))}
 
-                    {/* Default 'More' Card */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.5 }}
-                        className="flex items-center justify-center bg-gray-100 rounded-2xl p-6 border-2 border-dashed border-gray-300 text-gray-500 hover:bg-gray-50 hover:border-primary/50 hover:text-primary transition-all cursor-pointer"
-                    >
-                        <div className="text-center">
-                            <span className="block text-lg font-medium mb-1">More Courses</span>
-                            <span className="text-sm">Coming Soon</span>
-                        </div>
-                    </motion.div>
-                </div>
+                        {/* Default 'More' Card */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5, delay: 0.5 }}
+                            className="flex items-center justify-center bg-gray-100 rounded-2xl p-6 border-2 border-dashed border-gray-300 text-gray-500 hover:bg-gray-50 hover:border-primary/50 hover:text-primary transition-all cursor-pointer"
+                        >
+                            <div className="text-center">
+                                <span className="block text-lg font-medium mb-1">More Courses</span>
+                                <span className="text-sm">Coming Soon</span>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
             </div>
         </section>
     );

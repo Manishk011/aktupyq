@@ -15,6 +15,11 @@ const ResourceCard = ({ material, subject }) => (
             <div>
                 <h4 className="font-semibold text-gray-800">{subject.name}</h4>
                 <p className="text-xs text-gray-500">{subject.code} • {material.title}</p>
+                {material.session && (
+                    <span className="inline-block mt-1 bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                        {material.session}
+                    </span>
+                )}
             </div>
         </div>
         <div className="flex items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0 pt-2 sm:pt-0 border-t border-gray-100 sm:border-0">
@@ -166,7 +171,10 @@ const MaterialPage = () => {
                             ) : (
                                 <div>
                                     {loading ? (
-                                        <div className="text-center py-10 text-gray-500">Loading materials...</div>
+                                        <div className="flex flex-col items-center justify-center py-20">
+                                            <div className="w-12 h-12 border-4 border-blue-200 border-t-primary rounded-full animate-spin mb-4"></div>
+                                            <p className="text-gray-500 font-medium">Loading materials...</p>
+                                        </div>
                                     ) : materialsData.length > 0 ? (
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             {materialsData.map((item) => (

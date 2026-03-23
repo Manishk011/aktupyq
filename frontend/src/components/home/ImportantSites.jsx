@@ -24,6 +24,7 @@ const SiteCard = ({ name, description, url }) => (
                 scrolling="no"
                 loading="lazy"
                 tabIndex={-1}
+                sandbox="allow-scripts allow-same-origin"
             />
             
             {/* Overlay to ensure hover/click works and improve text legibility */}

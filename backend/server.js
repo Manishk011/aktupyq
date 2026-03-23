@@ -40,6 +40,7 @@ app.use('/api/materials', require('./routes/materialRoutes'));
 app.use('/api/quantum', require('./routes/quantumRoutes'));
 app.use('/api/stats', require('./routes/statRoutes'));
 app.use('/api/contacts', require('./routes/contactRoutes'));
+app.use('/api/search', require('./routes/searchRoutes'));
 
 const PORT = process.env.PORT || 5000;
 

@@ -45,6 +45,7 @@ const MaterialsAdmin = () => {
     const [uploadLoading, setUploadLoading] = useState(false);
     const [title, setTitle] = useState('');
     const [type, setType] = useState('notes');
+    const [session, setSession] = useState('');
     const [isGdrive, setIsGdrive] = useState(false);
     const [gdriveLink, setGdriveLink] = useState('');
     const [file, setFile] = useState(null);
@@ -136,6 +137,7 @@ const MaterialsAdmin = () => {
         const formData = new FormData();
         formData.append('title', title);
         formData.append('type', type);
+        if (session) formData.append('session', session);
         formData.append('subjectId', selectedSubjectId);
         formData.append('isGdrive', isGdrive);
 
@@ -165,6 +167,7 @@ const MaterialsAdmin = () => {
         setEditingId(material._id);
         setTitle(material.title);
         setType(material.type);
+        setSession(material.session || '');
         if (material.isGdrive) {
             setIsGdrive(true);
             setGdriveLink(material.gdriveLink || '');
@@ -179,6 +182,7 @@ const MaterialsAdmin = () => {
         setIsFormOpen(false);
         setEditingId(null);
         setTitle('');
+        setSession('');
         setFile(null);
         setGdriveLink('');
         setIsGdrive(false);
@@ -288,6 +292,18 @@ const MaterialsAdmin = () => {
                                             <option value="notes">Notes</option>
                                             <option value="pyq">PYQ</option>
                                             <option value="syllabus">Syllabus</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Academic Session (Optional)</label>
+                                        <select value={session} onChange={e => setSession(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white" >
+                                            <option value="">Select Session</option>
+                                            {Array.from({ length: 10 }).map((_, i) => {
+                                                const year = new Date().getFullYear() - i;
+                                                const sessStr = `${year}-${(year + 1).toString().slice(-2)}`;
+                                                return <option key={sessStr} value={sessStr}>{sessStr}</option>;
+                                            })}
                                         </select>
                                     </div>
 
@@ -530,7 +546,13 @@ const MaterialsAdmin = () => {
                                                     </td>
                                                     <td className="px-6 py-4 text-right">
                                                         <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                            <button onClick={() => window.open(`http://localhost:5000/api/materials/${m._id}/proxy?action=view`, '_blank')} className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="View/Download">
+                                                            <button 
+                                                                onClick={() => {
+                                                                    const proxyUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/materials/${m._id}/proxy?action=view`;
+                                                                    window.open(proxyUrl, '_blank');
+                                                                }} 
+                                                                className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="View/Download"
+                                                            >
                                                                 <FileDown size={18} />
                                                             </button>
                                                             <button onClick={() => handleEdit(m)} className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors" title="Edit">
@@ -572,7 +594,13 @@ const MaterialsAdmin = () => {
                                                 </div>
 
                                                 <div className="pt-4 border-t border-gray-100 flex items-center justify-between mt-auto">
-                                                    <button onClick={() => window.open(`http://localhost:5000/api/materials/${m._id}/proxy?action=view`, '_blank')} className="text-sm font-semibold text-gray-600 hover:text-blue-600 flex items-center gap-1 transition-colors">
+                                                    <button 
+                                                        onClick={() => {
+                                                            const proxyUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/materials/${m._id}/proxy?action=view`;
+                                                            window.open(proxyUrl, '_blank');
+                                                        }} 
+                                                        className="text-sm font-semibold text-gray-600 hover:text-blue-600 flex items-center gap-1 transition-colors"
+                                                    >
                                                         <FileDown size={16} /> Preview
                                                     </button>
                                                     <div className="flex items-center gap-1">

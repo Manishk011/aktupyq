@@ -1,9 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Button from '../ui/Button';
 import { ArrowRight, BookOpen } from 'lucide-react';
 
 const IntroSection = () => {
+    const navigate = useNavigate();
     return (
         <section className="py-20 bg-white">
             <div className="container mx-auto px-4 lg:px-8">
@@ -24,10 +26,14 @@ const IntroSection = () => {
                             </p>
 
                             <div className="flex flex-wrap gap-4">
-                                <Button variant="primary" className="px-8 py-3 text-lg">
+                                <Button 
+                                    variant="primary" 
+                                    className="px-8 py-3 text-lg" 
+                                    onClick={() => document.getElementById('courses')?.scrollIntoView({ behavior: 'smooth' })}
+                                >
                                     Explore Courses <ArrowRight size={20} />
                                 </Button>
-                                <Button variant="outline" className="px-8 py-3 text-lg">
+                                <Button variant="outline" className="px-8 py-3 text-lg" onClick={() => navigate('/syllabus')}>
                                     View Syllabus
                                 </Button>
                             </div>

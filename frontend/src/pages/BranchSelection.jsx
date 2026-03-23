@@ -19,6 +19,7 @@ const BranchSelection = () => {
     const { courseId } = useParams();
     const [branches, setBranches] = useState([]);
     const [courseName, setCourseName] = useState(courseId?.toUpperCase());
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchBranchData = async () => {
@@ -41,6 +42,8 @@ const BranchSelection = () => {
                 }
             } catch (error) {
                 console.error("Error fetching branches:", error);
+            } finally {
+                setLoading(false);
             }
         };
         fetchBranchData();
@@ -64,30 +67,37 @@ const BranchSelection = () => {
                     </motion.div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-                    {branches.map((branch, index) => (
-                        <motion.div
-                            key={branch._id}
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: index * 0.1, duration: 0.3 }}
-                            whileHover={{ y: -5, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)" }}
-                        >
-                            <Link
-                                to={`/course/${courseId}/${branch.slug}`}
-                                className="block bg-white rounded-xl p-6 border border-gray-100 shadow-sm hover:border-primary/30 transition-all h-full"
+                {loading ? (
+                    <div className="flex flex-col items-center justify-center py-20">
+                        <div className="w-12 h-12 border-4 border-blue-200 border-t-primary rounded-full animate-spin mb-4"></div>
+                        <p className="text-gray-500 font-medium">Loading branches...</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                        {branches.map((branch, index) => (
+                            <motion.div
+                                key={branch._id}
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: index * 0.1, duration: 0.3 }}
+                                whileHover={{ y: -5, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)" }}
                             >
-                                <div className={`w-12 h-12 ${branch.color} rounded-lg flex items-center justify-center mb-4 text-white shadow-md`}>
-                                    <branch.icon size={24} />
-                                </div>
-                                <h3 className="text-xl font-bold text-gray-800 mb-2">{branch.name}</h3>
-                                <p className="text-sm text-gray-500">
-                                    Access notes, PYQs, and syllabus for {branch.name} students.
-                                </p>
-                            </Link>
-                        </motion.div>
-                    ))}
-                </div>
+                                <Link
+                                    to={`/course/${courseId}/${branch.slug}`}
+                                    className="block bg-white rounded-xl p-6 border border-gray-100 shadow-sm hover:border-primary/30 transition-all h-full"
+                                >
+                                    <div className={`w-12 h-12 ${branch.color} rounded-lg flex items-center justify-center mb-4 text-white shadow-md`}>
+                                        <branch.icon size={24} />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-gray-800 mb-2">{branch.name}</h3>
+                                    <p className="text-sm text-gray-500">
+                                        Access notes, PYQs, and syllabus for {branch.name} students.
+                                    </p>
+                                </Link>
+                            </motion.div>
+                        ))}
+                    </div>
+                )}
             </div>
         </Layout>
     );

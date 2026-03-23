@@ -74,6 +74,11 @@ export const getMaterials = async (subjectId, type = '') => {
     return res.data;
 };
 
+export const globalSearch = async (query) => {
+    const res = await api.get('/search', { params: { q: query } });
+    return res.data;
+};
+
 export const submitContact = async (contactData) => {
     const res = await api.post('/contacts', contactData);
     return res.data;

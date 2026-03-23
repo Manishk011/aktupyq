@@ -12,6 +12,9 @@ const materialSchema = mongoose.Schema(
             required: [true, 'Please select material type'],
             enum: ['notes', 'pyq', 'syllabus'],
         },
+        session: {
+            type: String,
+        },
         fileUrl: {
             type: String,
             required: function() { return !this.isGdrive; },
