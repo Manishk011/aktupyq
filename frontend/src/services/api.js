@@ -147,3 +147,22 @@ export const deleteContact = async (id) => {
     const res = await api.delete(`/contacts/${id}`);
     return res.data;
 };
+
+// ==========================================
+// Auth Operations
+// ==========================================
+
+export const changePassword = async (data) => {
+    const res = await api.put('/auth/change-password', data);
+    return res.data;
+};
+
+export const forgotPassword = async (email) => {
+    const res = await api.post('/auth/forgot-password', { email });
+    return res.data;
+};
+
+export const resetPassword = async (token, password) => {
+    const res = await api.put(`/auth/reset-password/${token}`, { password });
+    return res.data;
+};

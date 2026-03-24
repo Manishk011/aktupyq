@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/ui/Button';
 
@@ -80,6 +80,14 @@ const AdminLogin = () => {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
+                        </div>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                        <div className="text-sm ml-auto">
+                            <Link to="/admin/forgot-password" className="font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                                Forgot your password?
+                            </Link>
                         </div>
                     </div>
 

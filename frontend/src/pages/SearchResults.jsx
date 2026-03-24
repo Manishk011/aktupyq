@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { Search as SearchIcon, FileText, Cloud, HardDrive, BookOpen, Layers, ExternalLink, GraduationCap } from 'lucide-react';
 import { globalSearch } from '../services/api';

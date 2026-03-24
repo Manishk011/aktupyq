@@ -1,8 +1,7 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Button from '../ui/Button';
-import { ArrowRight, BookOpen } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 const IntroSection = () => {
     const navigate = useNavigate();
@@ -26,9 +25,9 @@ const IntroSection = () => {
                             </p>
 
                             <div className="flex flex-wrap gap-4">
-                                <Button 
-                                    variant="primary" 
-                                    className="px-8 py-3 text-lg" 
+                                <Button
+                                    variant="primary"
+                                    className="px-8 py-3 text-lg"
                                     onClick={() => document.getElementById('courses')?.scrollIntoView({ behavior: 'smooth' })}
                                 >
                                     Explore Courses <ArrowRight size={20} />

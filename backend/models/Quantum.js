@@ -12,9 +12,35 @@ const quantumSchema = mongoose.Schema(
             ref: 'Year',
             required: true,
         },
+        subjectId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Subject',
+            required: true,
+        },
+        session: {
+            type: String,
+        },
+        type: {
+            type: String,
+            required: [true, 'Please select quantum type'],
+            enum: ['link', 'file'],
+            default: 'link',
+        },
         telegramLink: {
             type: String,
-            required: [true, 'Please add a telegram link'],
+            required: function() { return this.type === 'link'; },
+        },
+        fileUrl: {
+            type: String,
+            required: function() { return this.type === 'file' && !this.isGdrive; },
+        },
+        gdriveLink: {
+            type: String,
+            required: function() { return this.type === 'file' && this.isGdrive; },
+        },
+        isGdrive: {
+            type: Boolean,
+            default: false,
         },
     },
     {

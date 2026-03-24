@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { LayoutDashboard, BookOpen, Layers, Calendar, FileText, Link as LinkIcon, LogOut, Mail } from 'lucide-react';
+import { LayoutDashboard, BookOpen, Layers, Calendar, FileText, Link as LinkIcon, LogOut, Mail, Key } from 'lucide-react';
 import { getUnreadContactCount } from '../../services/api';
 
 const AdminLayout = () => {
@@ -42,6 +42,7 @@ const AdminLayout = () => {
         { path: '/admin/materials', icon: FileText, label: 'Materials' },
         { path: '/admin/quantum', icon: LinkIcon, label: 'Quantum Links' },
         { path: '/admin/contacts', icon: Mail, label: 'Messages' },
+        { path: '/admin/change-password', icon: Key, label: 'Change Password' },
     ];
 
     return (

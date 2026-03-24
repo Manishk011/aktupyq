@@ -188,8 +188,8 @@ const Header = () => {
                 <div className="flex items-center justify-between gap-4">
                     {/* Logo */}
                     <Link to="/" className="flex items-center gap-2 group">
-                        <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark rounded-xl flex items-center justify-center text-white shadow-lg group-hover:shadow-primary/30 transition-all duration-300">
-                            <GraduationCap size={24} />
+                        <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark rounded-xl flex items-center justify-center text-white shadow-lg group-hover:shadow-primary/30 transition-all duration-300 overflow-hidden">
+                            <img src="/logo.jpeg" alt="aktupyq logo" className="w-full h-full object-cover" />
                         </div>
                         <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
                             aktupyq

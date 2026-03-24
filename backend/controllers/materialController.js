@@ -1,5 +1,4 @@
 const Material = require('../models/Material');
-const fs = require('fs');
 const https = require('https');
 const { S3Client, DeleteObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
 
@@ -99,12 +98,12 @@ const deleteMaterial = async (req, res) => {
                 // The key is what comes after the bucket domain
                 const urlObj = new URL(material.fileUrl);
                 const key = decodeURIComponent(urlObj.pathname.substring(1)); // Remove leading slash
-                
+
                 const deleteParams = {
                     Bucket: process.env.AWS_BUCKET_NAME,
                     Key: key,
                 };
-                
+
                 await s3Config.send(new DeleteObjectCommand(deleteParams));
             } catch (err) {
                 console.error("Failed to delete from S3:", err);
@@ -163,18 +162,18 @@ const proxyMaterial = async (req, res) => {
                 try {
                     const urlObj = new URL(material.fileUrl);
                     const key = decodeURIComponent(urlObj.pathname.substring(1));
-                    
+
                     const command = new GetObjectCommand({
                         Bucket: process.env.AWS_BUCKET_NAME,
                         Key: key
                     });
-                    
+
                     const response = await s3Config.send(command);
                     res.setHeader('Content-Type', response.ContentType || 'application/pdf');
                     // Ensure the title is safe for filenames
                     const safeTitle = material.title.replace(/[^a-zA-Z0-9_-]/g, '_');
                     res.setHeader('Content-Disposition', `${action}; filename="${safeTitle}.pdf"`);
-                    
+
                     // response.Body is a readable stream in Node.js
                     response.Body.pipe(res);
                 } catch (s3Error) {

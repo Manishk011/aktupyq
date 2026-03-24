@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import { motion } from 'framer-motion';
-import { Code, Cpu, Hammer, Zap, Radio, Globe, Folder } from 'lucide-react';
+import { Code, Hammer, Zap, Radio, Globe, Folder } from 'lucide-react';
 import { getCourses, getBranches } from '../services/api';
 
 const iconMap = {

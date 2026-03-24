@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import { motion } from 'framer-motion';
-import { Calendar, GraduationCap, Clock, Award } from 'lucide-react';
 import { getCourses, getBranches, getYears } from '../services/api';
 
 const iconMap = {

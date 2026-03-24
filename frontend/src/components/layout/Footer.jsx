@@ -25,8 +25,8 @@ const Footer = () => {
                     {/* Brand */}
                     <div className="space-y-4">
                         <Link to="/" className="flex items-center gap-2 group">
-                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-white">
-                                <GraduationCap size={24} />
+                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-white overflow-hidden">
+                                <img src="/logo.jpeg" alt="aktupyq logo" className="w-full h-full object-cover" />
                             </div>
                             <span className="text-xl font-bold">aktupyq</span>
                         </Link>
@@ -53,8 +53,8 @@ const Footer = () => {
                             {courses.length > 0 ? (
                                 courses.map((course) => (
                                     <li key={course._id}>
-                                        <Link 
-                                            to={`/course/${course.name.toLowerCase().replace(/\./g, '')}`} 
+                                        <Link
+                                            to={`/course/${course.name.toLowerCase().replace(/\./g, '')}`}
                                             className="text-gray-400 hover:text-blue-400 transition-colors"
                                         >
                                             {course.name}
@@ -76,7 +76,13 @@ const Footer = () => {
                                 support@aktupyq.com
                             </a>
                             <div className="flex items-center gap-4 pt-2">
-                                <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-gray-400 hover:bg-blue-600 hover:text-white transition-all">
+                                <a
+                                    href="https://t.me/Aktupyq_notes_quantum"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    aria-label="Join our Telegram"
+                                    className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-gray-400 hover:bg-blue-600 hover:text-white hover:scale-110 transition-all"
+                                >
                                     <Send size={18} />
                                 </a>
                                 <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-gray-400 hover:bg-blue-600 hover:text-white transition-all">

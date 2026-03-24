@@ -1,4 +1,3 @@
-import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
 import ScrollToTop from './components/common/ScrollToTop';
@@ -27,6 +26,11 @@ import ContactUs from './pages/ContactUs';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsAndConditions from './pages/TermsAndConditions';
 
+// Admin Password Components
+import ChangePassword from './pages/admin/ChangePassword';
+import ForgotPassword from './pages/admin/ForgotPassword';
+import ResetPassword from './pages/admin/ResetPassword';
+
 function App() {
     return (
         <>
@@ -37,6 +41,8 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/admin/login" element={<AdminLogin />} />
+                <Route path="/admin/forgot-password" element={<ForgotPassword />} />
+                <Route path="/admin/reset-password/:token" element={<ResetPassword />} />
 
                 {/* Dynamic Course Routes */}
                 <Route path="/course/:courseId" element={<BranchSelection />} />
@@ -62,6 +68,7 @@ function App() {
                     <Route path="materials" element={<MaterialsAdmin />} />
                     <Route path="quantum" element={<QuantumAdmin />} />
                     <Route path="contacts" element={<ContactAdmin />} />
+                    <Route path="change-password" element={<ChangePassword />} />
                 </Route>
 
                 {/* Fallback */}
