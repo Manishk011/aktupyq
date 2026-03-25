@@ -165,27 +165,44 @@ const QuantumAdmin = () => {
         setMessage('');
 
         try {
-            const formData = new FormData();
-            formData.append('branchId', selectedBranchId);
-            formData.append('yearId', selectedYearId);
-            formData.append('subjectId', selectedSubjectId);
-            formData.append('type', type);
-            if (editingId) formData.append('id', editingId);
+            let finalFileUrl = undefined;
+
+            if (type === 'file' && !isGdrive && file) {
+                const presignRes = await api.post('/upload/presigned-url', {
+                    filename: file.name,
+                    fileType: file.type || 'application/pdf'
+                });
+                const { uploadUrl, fileUrl } = presignRes.data;
+
+                await fetch(uploadUrl, {
+                    method: 'PUT',
+                    body: file,
+                    headers: { 'Content-Type': file.type || 'application/pdf' }
+                });
+                
+                finalFileUrl = fileUrl;
+            }
+
+            const payload = {
+                branchId: selectedBranchId,
+                yearId: selectedYearId,
+                subjectId: selectedSubjectId,
+                type,
+                id: editingId || undefined
+            };
 
             if (type === 'link') {
-                formData.append('telegramLink', telegramLink);
+                payload.telegramLink = telegramLink;
             } else {
-                formData.append('isGdrive', isGdrive);
+                payload.isGdrive = isGdrive;
                 if (isGdrive) {
-                    formData.append('gdriveLink', gdriveLink);
+                    payload.gdriveLink = gdriveLink;
                 } else if (file) {
-                    formData.append('file', file);
+                    payload.fileUrl = finalFileUrl;
                 }
             }
 
-            await api.post('/quantum', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            await api.post('/quantum', payload);
             setMessage(editingId ? 'Quantum resource updated successfully!' : 'Quantum resource saved successfully!');
             fetchQuantums();
             resetFormState();

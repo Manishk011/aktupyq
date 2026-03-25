@@ -134,24 +134,46 @@ const MaterialsAdmin = () => {
         }
 
         setUploadLoading(true);
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('type', type);
-        if (session) formData.append('session', session);
-        formData.append('subjectId', selectedSubjectId);
-        formData.append('isGdrive', isGdrive);
-
-        if (isGdrive) formData.append('gdriveLink', gdriveLink);
-        else if (file) formData.append('file', file);
 
         try {
+            let finalFileUrl = undefined;
+
+            if (!isGdrive && file) {
+                // 1. Get Presigned URL
+                const presignRes = await api.post('/upload/presigned-url', {
+                    filename: file.name,
+                    fileType: file.type || 'application/pdf'
+                });
+                const { uploadUrl, fileUrl } = presignRes.data;
+
+                // 2. Upload directly to S3
+                await fetch(uploadUrl, {
+                    method: 'PUT',
+                    body: file,
+                    headers: {
+                        'Content-Type': file.type || 'application/pdf'
+                    }
+                });
+                
+                finalFileUrl = fileUrl;
+            }
+
+            // 3. Prepare JSON payload instead of FormData
+            const payload = {
+                title,
+                type,
+                session: session || undefined,
+                subjectId: selectedSubjectId,
+                isGdrive,
+                gdriveLink: isGdrive ? gdriveLink : undefined,
+                fileUrl: finalFileUrl
+            };
+
             if (editingId) {
-                await updateMaterial(editingId, formData);
+                await api.put(`/materials/${editingId}`, payload);
                 showToast('Material updated successfully');
             } else {
-                await api.post('/materials', formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
+                await api.post('/materials', payload);
                 showToast('Material uploaded successfully');
             }
             handleCancelForm();
