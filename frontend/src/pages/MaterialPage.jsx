@@ -7,7 +7,7 @@ import { FileText, Download, BookOpen, Send, Lock, Eye, ChevronLeft, Folder, Che
 import { getCourses, getBranches, getYears, getSubjects, getMaterials } from '../services/api';
 import SEO from '../components/SEO';
 
-const ResourceCard = ({ material, subject }) => {
+const ResourceCard = ({ material, subject, isQuantumSection }) => {
     const isQuantumLink = !material.title && material.type === 'link';
     const displayTitle = material.title || 'Quantum Material';
 
@@ -19,8 +19,8 @@ const ResourceCard = ({ material, subject }) => {
                 </div>
                 <div>
                     <h4 className="font-semibold text-gray-800 line-clamp-1" title={displayTitle}>{displayTitle}</h4>
-                    <p className="text-xs text-gray-500 font-medium">{subject.name} • {subject.code}</p>
-                    {material.session && (
+                    <p className="text-xs text-gray-500 font-medium">{subject.name}{!isQuantumSection && ` • ${subject.code}`}</p>
+                    {(!isQuantumSection && material.session) && (
                         <span className="inline-block mt-2 bg-gray-50 text-gray-600 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-gray-200">
                             Session: {material.session}
                         </span>
@@ -143,7 +143,17 @@ const MaterialPage = () => {
                 const results = await Promise.all(promises);
                 let flattened = results.flat();
                 
-                setAllActiveTabMaterials(flattened);
+                const uniqueMaterials = [];
+                const matSeen = new Set();
+                for (const item of flattened) {
+                    if (!matSeen.has(item.material._id)) {
+                        matSeen.add(item.material._id);
+                        uniqueMaterials.push(item);
+                    }
+                }
+                
+                setAllActiveTabMaterials(uniqueMaterials);
+                flattened = uniqueMaterials;
                 
                 // Group to unique names that ACTUALLY have materials
                 const seen = new Set();
@@ -181,8 +191,11 @@ const MaterialPage = () => {
 
         let filtered = allActiveTabMaterials.filter(item => item.subject.name === selectedSubjectName);
 
-        // Sort by session descending
+        // Sort by session descending (unless quantum)
         filtered.sort((a, b) => {
+            if (activeTab === 'quantum') {
+                return new Date(b.material.createdAt) - new Date(a.material.createdAt);
+            }
             const sA = a.material.session;
             const sB = b.material.session;
             if (sA && sB) return sB.localeCompare(sA);
@@ -331,7 +344,7 @@ const MaterialPage = () => {
                                         ) : paginatedData.length > 0 ? (
                                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                                 {paginatedData.map((item, idx) => (
-                                                    <ResourceCard key={item.material._id || idx} subject={item.subject} material={item.material} />
+                                                    <ResourceCard key={item.material._id || idx} subject={item.subject} material={item.material} isQuantumSection={activeTab === 'quantum'} />
                                                 ))}
                                             </div>
                                         ) : (

@@ -17,9 +17,6 @@ const quantumSchema = mongoose.Schema(
             ref: 'Subject',
             required: true,
         },
-        session: {
-            type: String,
-        },
         type: {
             type: String,
             required: [true, 'Please select quantum type'],

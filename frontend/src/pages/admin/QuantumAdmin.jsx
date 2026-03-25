@@ -34,7 +34,6 @@ const QuantumAdmin = () => {
 
     // Link/File state
     const [type, setType] = useState('link'); // 'link' | 'file'
-    const [session, setSession] = useState('');
     const [telegramLink, setTelegramLink] = useState('');
     const [isGdrive, setIsGdrive] = useState(false);
     const [gdriveLink, setGdriveLink] = useState('');
@@ -71,8 +70,16 @@ const QuantumAdmin = () => {
     useEffect(() => {
         if (!selectedYearId) return;
         getSubjects(selectedYearId).then(data => {
-            setSubjects(data);
-            if (data.length > 0) setSelectedSubjectId(data[0]._id);
+            const unique = [];
+            const seen = new Set();
+            for (const s of data) {
+                if (!seen.has(s.name)) {
+                    seen.add(s.name);
+                    unique.push(s);
+                }
+            }
+            setSubjects(unique);
+            if (unique.length > 0) setSelectedSubjectId(unique[0]._id);
             else { setSelectedSubjectId(''); setQuantums([]); }
         });
     }, [selectedYearId]);
@@ -101,7 +108,6 @@ const QuantumAdmin = () => {
 
     const resetFormState = () => {
         setType('link');
-        setSession('');
         setTelegramLink('');
         setIsGdrive(false);
         setGdriveLink('');
@@ -114,7 +120,6 @@ const QuantumAdmin = () => {
     const handleEdit = (q) => {
         setEditingId(q._id);
         setType(q.type || 'link');
-        setSession(q.session || '');
         setTelegramLink(q.telegramLink || '');
         setIsGdrive(q.isGdrive || false);
         setGdriveLink(q.gdriveLink || '');
@@ -164,7 +169,6 @@ const QuantumAdmin = () => {
             formData.append('branchId', selectedBranchId);
             formData.append('yearId', selectedYearId);
             formData.append('subjectId', selectedSubjectId);
-            if (session) formData.append('session', session);
             formData.append('type', type);
             if (editingId) formData.append('id', editingId);
 
@@ -236,7 +240,7 @@ const QuantumAdmin = () => {
                     <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1 ml-1">Subject</p>
                     <select value={selectedSubjectId} onChange={e => setSelectedSubjectId(e.target.value)} disabled={!subjects.length} className="w-full px-4 py-2 border border-blue-200 bg-blue-50/50 rounded-xl text-sm font-bold text-blue-700 outline-none disabled:opacity-50">
                         <option value="">{subjects.length ? 'Select Subject' : 'No Subjects'}</option>
-                        {subjects.map(s => <option key={s._id} value={s._id}>{s.code} - {s.name}</option>)}
+                        {subjects.map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
                     </select>
                 </div>
             </div>
@@ -252,18 +256,6 @@ const QuantumAdmin = () => {
                             </div>
                             <div className="p-6 overflow-y-auto">
                                 <form id="quantum-form" onSubmit={handleSave} className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Session</label>
-                                        <select value={session} onChange={e => setSession(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 outline-none" required>
-                                            <option value="">Select Session</option>
-                                            {Array.from({ length: 10 }).map((_, i) => {
-                                                const year = new Date().getFullYear() - i;
-                                                const sessStr = `${year}-${(year + 1).toString().slice(-2)}`;
-                                                return <option key={sessStr} value={sessStr}>{sessStr}</option>;
-                                            })}
-                                        </select>
-                                    </div>
-
                                     <div className="flex gap-4 mb-2">
                                         <label className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border cursor-pointer transition-all ${type === 'link' ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
                                             <input type="radio" checked={type === 'link'} onChange={() => setType('link')} className="sr-only" />
@@ -349,7 +341,6 @@ const QuantumAdmin = () => {
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-gray-50/80 border-b border-gray-100 text-xs uppercase text-gray-500 font-bold">
-                                    <th className="px-6 py-4">Session</th>
                                     <th className="px-6 py-4">Subject</th>
                                     <th className="px-6 py-4">Type</th>
                                     <th className="px-6 py-4">Added</th>
@@ -359,8 +350,7 @@ const QuantumAdmin = () => {
                             <tbody className="divide-y divide-gray-100">
                                 {quantums.map((q) => (
                                     <tr key={q._id} className="hover:bg-indigo-50/30 transition-colors">
-                                        <td className="px-6 py-4 font-semibold text-gray-900">{q.session || 'N/A'}</td>
-                                        <td className="px-6 py-4 text-sm text-gray-500">{q.subjectId?.name} ({q.subjectId?.code})</td>
+                                        <td className="px-6 py-4 text-sm text-gray-900 font-bold">{q.subjectId?.name}</td>
                                         <td className="px-6 py-4">
                                             <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase border ${q.type === 'link' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'}`}>
                                                 {q.type}

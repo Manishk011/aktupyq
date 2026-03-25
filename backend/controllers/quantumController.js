@@ -12,12 +12,19 @@ const s3Config = new S3Client({
 
 // @desc    Get quantum links by subject
 // @route   GET /api/quantum/subject/:subjectId
-// @access  Public
+const mongoose = require('mongoose');
+
 const getQuantums = async (req, res) => {
     try {
+        const subject = await mongoose.model('Subject').findById(req.params.subjectId);
+        if (!subject) return res.status(404).json({ message: 'Subject not found' });
+        
+        const sameNameSubjects = await mongoose.model('Subject').find({ name: subject.name });
+        const subjectIds = sameNameSubjects.map(s => s._id);
+
         const quantums = await Quantum.find({
-            subjectId: req.params.subjectId,
-        }).populate('subjectId', 'name code').sort({ session: -1, createdAt: -1 });
+            subjectId: { $in: subjectIds },
+        }).populate('subjectId', 'name code').sort({ createdAt: -1 });
 
         res.json({ materials: quantums });
     } catch (error) {
@@ -30,7 +37,7 @@ const getQuantums = async (req, res) => {
 // @access  Private/Admin
 const createQuantum = async (req, res) => {
     try {
-        const { branchId, yearId, subjectId, session, type, telegramLink, isGdrive, gdriveLink, id } = req.body;
+        const { branchId, yearId, subjectId, type, telegramLink, isGdrive, gdriveLink, id } = req.body;
 
         const isGdriveBool = isGdrive === 'true' || isGdrive === true;
         const quantumType = type || 'link';
@@ -78,7 +85,6 @@ const createQuantum = async (req, res) => {
         }
 
         quantum.type = quantumType;
-        quantum.session = session;
         quantum.subjectId = subjectId;
 
         if (quantumType === 'link') {
