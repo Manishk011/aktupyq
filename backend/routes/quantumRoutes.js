@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const { getQuantums, createQuantum, deleteQuantum, proxyQuantum } = require('../controllers/quantumController');
 const { protect, admin } = require('../middleware/auth');
-const upload = require('../middleware/upload');
+// multer removed
 
 router.route('/')
-    .post(protect, admin, upload.single('file'), createQuantum);
+    .post(protect, admin, createQuantum);
 
 router.route('/subject/:subjectId')
     .get(getQuantums);

@@ -42,11 +42,11 @@ const getMaterials = async (req, res) => {
 // @access  Private/Admin
 const createMaterial = async (req, res) => {
     try {
-        const { title, type, session, subjectId, isGdrive, gdriveLink } = req.body;
+        const { title, type, session, subjectId, isGdrive, gdriveLink, fileUrl } = req.body;
 
         const isGdriveBool = isGdrive === 'true' || isGdrive === true;
 
-        if (!isGdriveBool && !req.file) {
+        if (!isGdriveBool && !fileUrl) {
             return res.status(400).json({ message: 'Please upload a file or provide a GDrive link' });
         }
 
@@ -66,8 +66,7 @@ const createMaterial = async (req, res) => {
         if (isGdriveBool) {
             materialData.gdriveLink = gdriveLink;
         } else {
-            // Provided by multer-s3
-            materialData.fileUrl = req.file.location;
+            materialData.fileUrl = fileUrl;
         }
 
         const material = new Material(materialData);
@@ -200,7 +199,7 @@ const updateMaterial = async (req, res) => {
             return res.status(404).json({ message: 'Material not found' });
         }
 
-        const { title, type, session, subjectId, isGdrive, gdriveLink } = req.body;
+        const { title, type, session, subjectId, isGdrive, gdriveLink, fileUrl } = req.body;
         const isGdriveBool = isGdrive === 'true' || isGdrive === true;
 
         material.title = title || material.title;
@@ -239,7 +238,7 @@ const updateMaterial = async (req, res) => {
             }
         } else {
             // It's local file
-            if (req.file) {
+            if (fileUrl) {
                 // They uploaded a new local file. Delete the old one from S3 if it existed.
                 if (!material.isGdrive && material.fileUrl) {
                     try {
@@ -256,7 +255,7 @@ const updateMaterial = async (req, res) => {
 
                 material.isGdrive = false;
                 material.gdriveLink = undefined;
-                material.fileUrl = req.file.location;
+                material.fileUrl = fileUrl;
             } else if (material.isGdrive) {
                 return res.status(400).json({ message: 'Must provide a file when switching from GDrive to Local' });
             }

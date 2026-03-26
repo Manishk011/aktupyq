@@ -37,7 +37,7 @@ const getQuantums = async (req, res) => {
 // @access  Private/Admin
 const createQuantum = async (req, res) => {
     try {
-        const { branchId, yearId, subjectId, type, telegramLink, isGdrive, gdriveLink, id } = req.body;
+        const { branchId, yearId, subjectId, type, telegramLink, isGdrive, gdriveLink, id, fileUrl } = req.body;
 
         const isGdriveBool = isGdrive === 'true' || isGdrive === true;
         const quantumType = type || 'link';
@@ -47,7 +47,7 @@ const createQuantum = async (req, res) => {
         }
 
         if (quantumType === 'file') {
-            if (!isGdriveBool && !req.file && !id) {
+            if (!isGdriveBool && !fileUrl && !id) {
                 return res.status(400).json({ message: 'Please upload a file or provide a GDrive link' });
             }
             if (isGdriveBool && !gdriveLink) {
@@ -67,7 +67,7 @@ const createQuantum = async (req, res) => {
             
             // If replacing an old local file, delete it from S3
             if (quantum.type === 'file' && !quantum.isGdrive && quantum.fileUrl) {
-                if (quantumType === 'link' || isGdriveBool || req.file) {
+                if (quantumType === 'link' || isGdriveBool || fileUrl) {
                     try {
                         const urlObj = new URL(quantum.fileUrl);
                         const key = decodeURIComponent(urlObj.pathname.substring(1));
@@ -98,8 +98,8 @@ const createQuantum = async (req, res) => {
             if (isGdriveBool) {
                 quantum.gdriveLink = gdriveLink;
                 quantum.fileUrl = undefined;
-            } else if (req.file) {
-                quantum.fileUrl = req.file.location;
+            } else if (fileUrl) {
+                quantum.fileUrl = fileUrl;
                 quantum.gdriveLink = undefined;
             }
         }
