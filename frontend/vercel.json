@@ -1,6 +1,18 @@
 {
   "rewrites": [
     {
+      "source": "/sitemap_index.xml",
+      "destination": "https://api.aktupyq.com/api/sitemaps/sitemap_index.xml"
+    },
+    {
+      "source": "/sitemap-materials.xml",
+      "destination": "https://api.aktupyq.com/api/sitemaps/sitemap-materials.xml"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "https://api.aktupyq.com/api/sitemaps/sitemap.xml"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

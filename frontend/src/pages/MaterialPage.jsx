@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import Button from '../components/ui/Button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -61,7 +61,14 @@ const ResourceCard = ({ material, subject, isQuantumSection }) => {
 
 const MaterialPage = () => {
     const { courseId, branchId, yearId } = useParams();
-    const [activeTab, setActiveTab] = useState('notes');
+    const [searchParams, setSearchParams] = useSearchParams();
+    
+    // Read initial state from URL
+    const initialTab = searchParams.get('tab') || 'notes';
+    const initialSubject = searchParams.get('subject') || null;
+    const initialPage = parseInt(searchParams.get('page')) || 1;
+
+    const [activeTab, setActiveTab] = useState(initialTab);
 
     // Hierarchy State
     const [courseName, setCourseName] = useState(courseId?.toUpperCase());
@@ -70,14 +77,48 @@ const MaterialPage = () => {
     const [allSubjects, setAllSubjects] = useState([]);
     
     // Viewing State
-    const [selectedSubjectName, setSelectedSubjectName] = useState(null);
+    const [selectedSubjectName, setSelectedSubjectName] = useState(initialSubject);
     const [uniqueSubjectNames, setUniqueSubjectNames] = useState([]); // Folders to show
     const [allActiveTabMaterials, setAllActiveTabMaterials] = useState([]); // All fetched materials for this tab
     const [materialsData, setMaterialsData] = useState([]); // Filtered subset for selected subject name
     const [loading, setLoading] = useState(true);
 
     // Pagination State
-    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(initialPage);
+
+    // Update URL when state changes
+    const handleSetTab = (tabId) => {
+        setActiveTab(tabId);
+        setSearchParams(prev => {
+            if (tabId !== 'notes') prev.set('tab', tabId);
+            else prev.delete('tab');
+            prev.delete('page');
+            return prev;
+        });
+    };
+
+    const handleSetSubject = (subjectName) => {
+        setSelectedSubjectName(subjectName);
+        setCurrentPage(1);
+        setSearchParams(prev => {
+            if (subjectName) prev.set('subject', subjectName);
+            else prev.delete('subject');
+            prev.delete('page');
+            return prev;
+        });
+    };
+
+    const handleSetPage = (pageUpdater) => {
+        setCurrentPage(prevPage => {
+            const newPage = typeof pageUpdater === 'function' ? pageUpdater(prevPage) : pageUpdater;
+            setSearchParams(prev => {
+                if (newPage > 1) prev.set('page', newPage);
+                else prev.delete('page');
+                return prev;
+            });
+            return newPage;
+        });
+    };
     const ITEMS_PER_PAGE = 6;
 
     const tabs = [
@@ -205,7 +246,8 @@ const MaterialPage = () => {
         });
 
         setMaterialsData(filtered);
-        setCurrentPage(1);
+        // We do not reset page here because if it came from initial URL, we want to maintain it.
+        // It's reset in handleSetSubject instead.
     }, [selectedSubjectName, allActiveTabMaterials]);
 
     // Pagination specific calculations
@@ -237,12 +279,34 @@ const MaterialPage = () => {
         }
     };
 
+    // Calculate SEO URLs
+    const baseUrl = `https://www.aktupyq.com/course/${courseId}/${branchId}/${yearId}`;
+    let currentUrl = baseUrl;
+    const urlParams = new URLSearchParams();
+    if (activeTab !== 'notes') urlParams.set('tab', activeTab);
+    if (selectedSubjectName) urlParams.set('subject', selectedSubjectName);
+    if (currentPage > 1) urlParams.set('page', currentPage);
+    const queryString = urlParams.toString();
+    if (queryString) currentUrl += `?${queryString}`;
+
+    const prevParams = new URLSearchParams(urlParams);
+    if (currentPage > 2) prevParams.set('page', currentPage - 1);
+    else prevParams.delete('page');
+    const prevUrl = currentPage > 1 ? `${baseUrl}${prevParams.toString() ? '?' + prevParams.toString() : ''}` : null;
+
+    const nextParams = new URLSearchParams(urlParams);
+    nextParams.set('page', currentPage + 1);
+    const nextUrl = currentPage < totalPages ? `${baseUrl}?${nextParams.toString()}` : null;
+
     return (
         <Layout>
             <SEO 
                 title={seoTitle} 
                 description={seoDescription} 
                 schema={seoSchema} 
+                canonicalUrl={currentUrl}
+                prevUrl={prevUrl}
+                nextUrl={nextUrl}
             />
             <div className="min-h-screen bg-slate-50 py-12">
                 <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
@@ -260,7 +324,7 @@ const MaterialPage = () => {
                         {tabs.map((tab) => (
                             <button
                                 key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
+                                onClick={() => handleSetTab(tab.id)}
                                 className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all whitespace-nowrap ${activeTab === tab.id
                                     ? 'bg-primary text-white shadow-md'
                                     : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'
@@ -297,7 +361,7 @@ const MaterialPage = () => {
                                             {uniqueSubjectNames.map((subject, idx) => (
                                                 <button
                                                     key={idx}
-                                                    onClick={() => setSelectedSubjectName(subject.name)}
+                                                    onClick={() => handleSetSubject(subject.name)}
                                                     className="bg-white hover:bg-blue-50/50 border border-gray-200 hover:border-blue-300 shadow-sm hover:shadow-md rounded-2xl p-6 text-left transition-all group flex items-center gap-5"
                                                 >
                                                     <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-transform duration-300 group-hover:scale-110 shadow-sm">
@@ -321,7 +385,7 @@ const MaterialPage = () => {
                                         <div className="flex items-center justify-between mb-6 border-b border-gray-100 pb-4">
                                             <div className="flex items-center gap-3">
                                                 <button
-                                                    onClick={() => setSelectedSubjectName(null)}
+                                                    onClick={() => handleSetSubject(null)}
                                                     className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 transition-colors"
                                                 >
                                                     <ChevronLeft size={20} />
@@ -359,7 +423,7 @@ const MaterialPage = () => {
                                         {totalPages > 1 && (
                                             <div className="flex items-center justify-center gap-2 mt-8 pt-6 border-t border-gray-100">
                                                 <button
-                                                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                                    onClick={() => handleSetPage(prev => Math.max(prev - 1, 1))}
                                                     disabled={currentPage === 1}
                                                     className="p-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                                                 >
@@ -370,7 +434,7 @@ const MaterialPage = () => {
                                                     {Array.from({ length: totalPages }).map((_, i) => (
                                                         <button
                                                             key={i}
-                                                            onClick={() => setCurrentPage(i + 1)}
+                                                            onClick={() => handleSetPage(i + 1)}
                                                             className={`w-8 h-8 rounded-lg text-sm font-bold transition-all ${currentPage === i + 1 ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'}`}
                                                         >
                                                             {i + 1}
@@ -379,7 +443,7 @@ const MaterialPage = () => {
                                                 </div>
 
                                                 <button
-                                                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                                    onClick={() => handleSetPage(prev => Math.min(prev + 1, totalPages))}
                                                     disabled={currentPage === totalPages}
                                                     className="p-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                                                 >

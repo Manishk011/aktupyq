@@ -42,6 +42,7 @@ app.use('/api/stats', require('./routes/statRoutes'));
 app.use('/api/contacts', require('./routes/contactRoutes'));
 app.use('/api/search', require('./routes/searchRoutes'));
 app.use('/api/upload', require('./routes/uploadRoutes'));
+app.use('/api/sitemaps', require('./routes/sitemapRoutes'));
 
 const PORT = process.env.PORT || 5000;
 
