@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://www.aktupyq.com/sitemap.xml
+Sitemap: https://www.aktupyq.com/sitemap_index.xml
