@@ -1,4 +1,12 @@
 {
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "aktupyq.com" }],
+      "destination": "https://www.aktupyq.com/$1",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/sitemap_index.xml",
@@ -18,3 +26,4 @@
     }
   ]
 }
+
